@@ -8,6 +8,8 @@ from sklearn.linear_model import HuberRegressor
 import pandas as pd
 import numpy as np
 import os
+import math
+
 logger.debug(os.getcwd())
 data_low_stress = pd.read_csv("./app/subject_1_low_stress.csv")
 data_low_stress.columns = {"Time", "Value"}
@@ -81,7 +83,7 @@ async def get_data(request_id):
             working_data, measures = hp.process(filtered_data, sample_rate=100.0)
             stress_index = stress_index_regressor.predict([heart_data[-1000:]])
             logger.debug(measures)
-            if measures["bpm"] == "nan" or measures["pnn20"] == "nan" or measures["breathingrate"] == "nan":
+            if math.isnan(float(measures["bpm"])) or math.isnan(float(measures["pnn20"])) or math.isnan(float(measures["breathingrate"])):
                 return {"heartrate": 0, "pnn20": 0, "breathingrate": 0, "stressindex": 0}
             return {"heartrate": float(f'{measures["bpm"]:.2f}'),
                     "pnn20": float(f'{measures["pnn20"]:.2f}'),
