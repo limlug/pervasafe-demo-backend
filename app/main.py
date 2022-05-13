@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import heartpy as hp
 from sklearn import linear_model
+from sklearn.linear_model import HuberRegressor
 import pandas as pd
 import numpy as np
 import os
@@ -26,7 +27,7 @@ while i < len(data_high_stress.values)-1000:
 high_stress_label = np.random.randint(low=60, high=100, size=np.array(high_stress_windowed).shape[0])
 X = np.concatenate((np.array(low_stress_windowed), np.array(high_stress_windowed)), axis=0)
 Y = np.concatenate((low_stress_label, high_stress_label), axis=0)
-stress_index_regressor = linear_model.BayesianRidge()
+stress_index_regressor = HuberRegressor()
 stress_index_regressor.fit(X, Y)
 logger.debug("Startup Complete")
 
