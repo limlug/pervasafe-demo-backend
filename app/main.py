@@ -74,16 +74,19 @@ async def store_data(request_data: DataModel):
 @app.get("/data/{request_id}")
 async def get_data(request_id):
     if request_id in data and len(data[request_id]) > 3000:
-        heart_data = data[request_id][-3000:]
-        filtered_data = hp.filter_signal(heart_data, cutoff=[0.75, 3.5], sample_rate=100.0, order=3,
-                                         filtertype='bandpass')
-        working_data, measures = hp.process(filtered_data, sample_rate=100.0)
-        stress_index = stress_index_regressor.predict([heart_data[-1000:]])
-        logger.debug(measures)
-        return {"heartrate": float(f'{measures["bpm"]:.2f}'),
-                "pnn20": float(f'{measures["pnn20"]:.2f}'),
-                "breathingrate": float(f'{measures["breathingrate"]:.3f}'),
-                "stressindex": int(stress_index[0]),
-                }
+        try:
+            heart_data = data[request_id][-3000:]
+            filtered_data = hp.filter_signal(heart_data, cutoff=[0.75, 3.5], sample_rate=100.0, order=3,
+                                             filtertype='bandpass')
+            working_data, measures = hp.process(filtered_data, sample_rate=100.0)
+            stress_index = stress_index_regressor.predict([heart_data[-1000:]])
+            logger.debug(measures)
+            return {"heartrate": float(f'{measures["bpm"]:.2f}'),
+                    "pnn20": float(f'{measures["pnn20"]:.2f}'),
+                    "breathingrate": float(f'{measures["breathingrate"]:.3f}'),
+                    "stressindex": int(stress_index[0]),
+                    }
+        except:
+            return {"heartrate": 0, "pnn20": 0, "breathingrate": 0, "stressindex": 0}
     else:
         return {"heartrate": 0, "pnn20": 0, "breathingrate": 0, "stressindex": 0}
