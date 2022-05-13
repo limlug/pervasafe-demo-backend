@@ -3,3 +3,6 @@ uvicorn
 loguru
 pydantic
 heartpy
+numpy
+pandas
+scikit-learn
